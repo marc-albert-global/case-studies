@@ -1,4 +1,4 @@
-# Case Study — Secure, Local-First Contract RAG
+# Case Study: Secure, Local-First Contract RAG
 
 > **Status:** Private working repository.
 > This write-up describes my own design and implementation. No third-party or confidential data is involved.
@@ -13,11 +13,11 @@ I wanted to prove out a RAG system that a privacy-conscious organization could a
 
 The system is **air-gapped by default** and treats cloud as strictly opt-in:
 
-1. **PII masking before embedding** — personal data is detected and masked *before* any text leaves the ingestion stage, so even the vector representation never carries raw PII.
-2. **Local-first inference & storage** — a local model runtime and a local vector store mean the default configuration sends nothing to any external service. Cloud providers can be enabled explicitly, but they're off out of the box.
-3. **Role-based access at retrieval time** — retrieval is filtered by the requesting user's role, so the answer is constrained by *who's asking*, not just what's in the corpus.
-4. **Legal-aware chunking** — documents are split along their actual structure (clauses, sections) rather than naive fixed windows, which materially improves retrieval quality on this document class.
-5. **A routed query graph** — queries flow through a small state machine that classifies the request and routes it to the right retrieval and answering path.
+1. **PII masking before embedding**: personal data is detected and masked *before* any text leaves the ingestion stage, so even the vector representation never carries raw PII.
+2. **Local-first inference & storage**: a local model runtime and a local vector store mean the default configuration sends nothing to any external service. Cloud providers can be enabled explicitly, but they're off out of the box.
+3. **Role-based access at retrieval time**: retrieval is filtered by the requesting user's role, so the answer is constrained by *who's asking*, not just what's in the corpus.
+4. **Legal-aware chunking**: documents are split along their actual structure (clauses, sections) rather than naive fixed windows, which materially improves retrieval quality on this document class.
+5. **A routed query graph**: queries flow through a small state machine that classifies the request and routes it to the right retrieval and answering path.
 
 ## Architecture (described)
 
@@ -30,7 +30,7 @@ user query ─► [ classifier / router ] ─► [ role-filtered retrieval ] ◄
                                     [ grounded answer + sources ]
 ```
 
-Built as a modular Python system: separate ingestion, storage, retrieval, and inference layers; configuration-driven so local vs. cloud is a setting, not a rewrite; with a test suite covering the parts that matter for trust — masking, access control, retrieval, and routing.
+Built as a modular Python system: separate ingestion, storage, retrieval, and inference layers; configuration-driven so local vs. cloud is a setting, not a rewrite; with a test suite covering the parts that matter for trust, masking, access control, retrieval, and routing.
 
 ## Outcome
 
