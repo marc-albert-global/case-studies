@@ -40,9 +40,34 @@ free-text request
 
 Key engineering choices: a strict grounding boundary (the model cannot emit a route that isn't in the candidate set), structured-output prompting for the extraction step, and a scoring function that keeps hard constraints non-negotiable while letting soft preferences move the ranking.
 
-## Outcome
+## Outcome and impact
 
-A working routing engine that turns vague traveler intent into grounded, explained recommendations, reliable enough to be developed toward a real product. The interesting part wasn't any single model call; it was the **architecture that makes an LLM safe to trust** on a problem where being confidently wrong is worse than being silent.
+A working routing engine that turns vague traveler intent into grounded,
+explained recommendations, reliable enough to be developed toward a real
+product. The interesting part wasn't any single model call; it was the
+**architecture that makes an LLM safe to trust** on a problem where being
+confidently wrong is worse than being silent.
+
+What it changed, qualitatively (specifics withheld under NDA):
+
+- **Eliminated a class of failure.** By construction the system cannot recommend a route that doesn't exist, removing the hallucinated-itinerary risk that blocks shipping a pure-LLM recommender.
+- **Made the output defensible.** Every recommendation carries a rationale tied to the traveler's stated constraints, which is what turns "the AI said so" into something a user and an operator can trust.
+- **Moved from prototype toward product.** The grounding-and-scoring separation held up well enough to justify continued investment as a commercial product.
+
+## My role and key decisions
+
+I designed and built it end to end. The decisions I'd defend in an interview:
+drawing the strict grounding boundary (LLM proposes and explains, engine
+guarantees validity), using structured-output extraction so intent parsing is
+machine-checkable, and keeping hard constraints non-negotiable in the scorer so
+preferences can never override feasibility.
+
+## Production considerations
+
+What taking this to production turns on: latency budget for the extraction and
+scoring steps, a fallback when intent extraction is low-confidence, monitoring
+the share of requests that return an empty grounded set (a coverage signal), and
+versioning the scoring weights so ranking changes are auditable.
 
 ## A clean-room analog you *can* read
 
